@@ -1,4 +1,6 @@
 from math import ceil
+from backend import check_board_state
+from backend import Player
 class Board:
 
     nothing = " "
@@ -10,6 +12,7 @@ class Board:
         self.board = [[self.nothing for x in range(width)] for y in range(height)]
         self.width = width
         self.height = height
+        self.players = [Player(x) for x in range(width-1)]
         self.in_a_row = int(ceil(height/2.0)) + 1
 
     def __str__(self):
@@ -29,11 +32,14 @@ class Board:
         if not self.board[spaceY][spaceX] == self.nothing:
             return False
         self.board[spaceY][spaceX] = place
-        self.check_state()
+        check_board_state(self, players)
         return True
 
-    def check_state(self):
-        pass
+    def get_player(self, index):
+        return self.players[index]
+
+    def get_at_space(self, spaceX, spaceY):
+        return self.board[spaceY][spaceX]
 
     def highlight(self, str):
         return self.highlight_begin + str + self.highlight_end
