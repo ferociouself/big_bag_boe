@@ -35,7 +35,7 @@ class Row:
         self.board = board
         self.owner = None
 
-    def get_length(self):
+    def __len__(self):
         return len(self.row)
 
     def get_row(self):
@@ -76,7 +76,6 @@ class Player:
     def __init__(self, index):
         self.index = index
         self.rows = []
-        self.points = 0
 
     def add_row(self, row):
         self.rows.append(row)
@@ -91,6 +90,12 @@ class Player:
                 num += 1
         return num
 
+    def get_points(self, point_dict):
+        score = 0
+        for row in self.rows:
+            score += point_dict[len(row)]
+        return score
+
     def get_index(self):
         return self.index
 
@@ -102,7 +107,7 @@ class Player:
         return False
 
     def __str__(self):
-        return "Player " + self.index.__str__() + ", Rows: " + self.rows.__str__() +", Points: " + self.points.__str__()
+        return "Player " + self.index.__str__() + ", Rows: " + self.rows.__str__()
 
 def get_row(board, point, direc, length):
     x_offset = 1
@@ -129,13 +134,36 @@ def get_row(board, point, direc, length):
 def check_board_state(board, player_list):
     num_players = len(player_list)
 
+    full = board.is_full()
+
     for c in range(board.width):
         for r in range(board.height):
             for d in range(8):
                 winning_row = get_row(board, Point(r, c), d, board.in_a_row)
                 if winning_row.owned():
                     winning_row.get_owner().add_row(winning_row)
-                    return winning_row.get_owner()
+                    player_points = calculate_score(board, player_list)
+                    return (True, full, winning_row.get_owner())
+
+
+    if full:
+        player_points = calculate_score()
+        point_max = -1
+        player_max = None
+        for player in player_points:
+            player_score = player.get_points(board.get_point_dict())
+            if player_score > point_max:
+                point_max = player_score
+                player_max = player
+        return (True, full, player)
+
+    return (False, full, None)
+
+
+def calculate_score(board, player_list):
+    for c in range(board.width):
+        for r in range(board.height):
+            for d in range(8):
                 for i in range(board.in_a_row-1, 0):
                     row = get_row(board, Point(r, c), d, i)
                     if row.owned():

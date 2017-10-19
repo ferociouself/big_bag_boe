@@ -29,6 +29,14 @@ class Board:
 
         return retStr
 
+    def is_full(self):
+        full = True
+        for r in range(self.height):
+            for c in range(self.width):
+                if self.get_at_space(c, r) != nothing:
+                    full = False
+        return full
+
     def place_in_space(self, place, spaceX, spaceY):
         if not self.board[spaceY][spaceX] == nothing:
             return False
@@ -38,18 +46,31 @@ class Board:
             return winning_player
         return True
 
-    def get_player(self, index):
-        return self.players[index]
-
-    def get_player_list(self):
-        return self.players
-
     def get_at_space(self, spaceX, spaceY):
         if spaceY >= self.height or spaceX >= self.width:
             return nothing
         if spaceY < 0 or spaceX < 0:
             return nothing
         return self.board[spaceY][spaceX]
+
+    def get_player(self, index):
+        return self.players[index]
+
+    def get_player_list(self):
+        return self.players
+
+    def get_point_dict(self):
+        multiplier = self.in_a_row - 1
+        cur_length = 1
+        cur_score = 1
+        point_dict = {}
+        while multiplier >= 1:
+            point_dict[cur_length] = cur_score
+            cur_score *= multiplier
+            multiplier -= 1
+            cur_length += 1
+        return point_dict
+
 
     def highlight(self, str):
         return self.highlight_begin + str + self.highlight_end
