@@ -1,15 +1,16 @@
 from math import ceil
 from backend import check_board_state
 from backend import Player
-class Board:
 
-    nothing = " "
+nothing = " "
+
+class Board:
 
     highlight_begin = "\033[1;31m"
     highlight_end = "\033[0m"
 
     def __init__(self, width, height):
-        self.board = [[self.nothing for x in range(width)] for y in range(height)]
+        self.board = [[nothing for x in range(width)] for y in range(height)]
         self.width = width
         self.height = height
         self.players = [Player(x) for x in range(width-1)]
@@ -29,16 +30,25 @@ class Board:
         return retStr
 
     def place_in_space(self, place, spaceX, spaceY):
-        if not self.board[spaceY][spaceX] == self.nothing:
+        if not self.board[spaceY][spaceX] == nothing:
             return False
         self.board[spaceY][spaceX] = place
-        check_board_state(self, players)
+        winning_player = check_board_state(self, self.players)
+        if check_board_state != None:
+            return winning_player
         return True
 
     def get_player(self, index):
         return self.players[index]
 
+    def get_player_list(self):
+        return self.players
+
     def get_at_space(self, spaceX, spaceY):
+        if spaceY >= self.height or spaceX >= self.width:
+            return nothing
+        if spaceY < 0 or spaceX < 0:
+            return nothing
         return self.board[spaceY][spaceX]
 
     def highlight(self, str):

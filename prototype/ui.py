@@ -27,8 +27,13 @@ if __name__ == "__main__":
 
 
 
-        board.place_in_space((player_index+1).__str__(), spaceX, spaceY)
+        winning_player = board.place_in_space((player_index+1).__str__(), spaceX, spaceY)
         print(board.highlight_col(spaceX))
+        if winning_player != None:
+            game_over = True
+            print("Player " + winning_player.get_index().__str__() + " won!")
+            print(winning_player)
+            print(winning_player.get_rows())
         #print(board)
 
         player_index = (player_index + 1) % players
