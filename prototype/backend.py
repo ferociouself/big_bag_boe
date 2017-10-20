@@ -56,8 +56,10 @@ class Row:
         player_index = self.row[0]
         for space in self.row:
             if space == nothing:
+                print("Row " + self.row.__str__() + " is not owned because there is an empty space")
                 return False
             if player_index != space:
+                print("Row " + self.row.__str__() + " is not owned because " + player_index + " is not " + space)
                 return False
             player_index = space
         self.owner = self.board.get_player(int(player_index))
@@ -142,15 +144,15 @@ def check_board_state(board, player_list):
                 winning_row = get_row(board, Point(r, c), d, board.in_a_row)
                 if winning_row.owned():
                     winning_row.get_owner().add_row(winning_row)
-                    player_points = calculate_score(board, player_list)
+                    calculate_score(board, player_list)
                     return (True, full, winning_row.get_owner())
 
 
     if full:
-        player_points = calculate_score()
+        calculate_score(board, player_list)
         point_max = -1
         player_max = None
-        for player in player_points:
+        for player in player_list:
             player_score = player.get_points(board.get_point_dict())
             if player_score > point_max:
                 point_max = player_score

@@ -33,18 +33,18 @@ class Board:
         full = True
         for r in range(self.height):
             for c in range(self.width):
-                if self.get_at_space(c, r) != nothing:
+                if self.get_at_space(c, r) == nothing:
                     full = False
         return full
 
     def place_in_space(self, place, spaceX, spaceY):
         if not self.board[spaceY][spaceX] == nothing:
-            return False
+            return (False, self.is_full(), None)
         self.board[spaceY][spaceX] = place
         winning_player = check_board_state(self, self.players)
         if check_board_state != None:
             return winning_player
-        return True
+        return (True, self.is_full(), None)
 
     def get_at_space(self, spaceX, spaceY):
         if spaceY >= self.height or spaceX >= self.width:

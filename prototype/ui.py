@@ -1,9 +1,12 @@
 from board import Board
 
-highlight = False
+highlight = True
+
+player_input = []
 
 if __name__ == "__main__":
     players = input("How many players are playing? ")
+    player_input.append(players)
 
     board = Board(players+1, players+1)
 
@@ -22,12 +25,14 @@ if __name__ == "__main__":
 
         while not yConfirm:
             spaceY = input("Which row would player " + (player_index + 1).__str__() + " like to choose: ") - 1
+            player_input.append(spaceY)
             if highlight:
                 print(board.highlight_row(spaceY))
             print ("Player " + (player_index + 1).__str__() + " chose row " + (spaceY + 1).__str__())
             spaceXStr = raw_input("Confirm row by entering a column, or enter \"n\" to enter a new column: ")
             if spaceXStr.isdigit():
                 spaceX = int(spaceXStr) - 1
+                player_input.append(spaceX)
                 yConfirm = True
 
 
@@ -38,6 +43,7 @@ if __name__ == "__main__":
         else:
             print(board)
         if board_full:
+            game_over = True
             print("Player " + winning_player.get_index().__str__() + " won!")
             print(winning_player)
             print(winning_player.get_rows())
@@ -51,3 +57,6 @@ if __name__ == "__main__":
         #print(board)
 
         player_index = (player_index + 1) % players
+
+    for inp in player_input:
+        print(inp)
