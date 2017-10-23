@@ -33,7 +33,7 @@ class Board:
         full = True
         for r in range(self.height):
             for c in range(self.width):
-                if self.get_at_space(c, r) == nothing:
+                if self.get_at_space(r, c) == nothing:
                     full = False
         return full
 
