@@ -1,4 +1,4 @@
-nothing = " "
+from settings import nothing
 
 class Point:
 
@@ -32,6 +32,9 @@ class Point:
     def __str__(self):
         return self.x.__str__() + ", " + self.y.__str__() + ": " + self.value
 
+    def __repr__(self):
+        return self.__str__()
+
 class Row:
 
     def __init__(self, row, board):
@@ -48,7 +51,7 @@ class Row:
     def contains(self, row):
         cont = True
         for elem in row:
-            if not elem in self.row:
+            if not (elem in self.row):
                 cont = False
         return cont
 
@@ -60,10 +63,8 @@ class Row:
         player_index = self.row[0].get_value()
         for space in self.row:
             if space.get_value() == nothing:
-                print("Row " + self.row.__str__() + " is not owned because there is an empty space")
                 return False
             if player_index != space.get_value():
-                print("Row " + self.row.__str__() + " is not owned because " + player_index + " is not " + space.get_value())
                 return False
             player_index = space.get_value()
         self.owner = self.board.get_player(int(player_index)-1)
@@ -75,16 +76,27 @@ class Row:
         return self.owner
 
     def __str__(self):
-        return self.row.__str__()
+        retStr = "["
+        for elem in self.row:
+            retStr += elem.__str__()
+            retStr += ", "
+        return retStr + "]"
+
+    def __iter__(self):
+        return self.row.__iter__()
+
+    def __repr__(self):
+        return self.__str__()
 
 class Player:
 
     def __init__(self, index):
         self.index = index
-        self.rows = []
+        self.rows = list()
 
     def add_row(self, row):
-        self.rows.append(row)
+        if not self.contains(row):
+            self.rows.append(row)
 
     def get_rows(self):
         return self.rows
@@ -110,10 +122,17 @@ class Player:
         for e_row in self.rows:
             if e_row.contains(row):
                 return True
+            if row.contains(e_row):
+                self.rows.remove(e_row)
+                self.rows.append(row)
+                return True
         return False
 
     def __str__(self):
         return "Player " + (self.index+1).__str__() + ", Rows: " + self.rows.__str__()
+
+    def __repr__(self):
+        return self.__str__()
 
 def get_row(board, point, direc, length):
     x_offset = 1
@@ -127,18 +146,14 @@ def get_row(board, point, direc, length):
     if direc == 5 or direc == 6 or direc == 7:
         x_offset = -1
 
-    print(direc, x_offset, y_offset)
-
     point_list = []
 
     x = point.get_x()
     y = point.get_y()
     for i in range(length):
         point_list.append(Point(x, y, board.get_at_space(x, y)))
-        print(Point(x, y, board.get_at_space(x, y)))
         x += x_offset
         y += y_offset
-    print(point_list)
     return Row(point_list, board)
 
 def check_board_state(board, player_list):
@@ -157,15 +172,21 @@ def check_board_state(board, player_list):
 
 
     if full:
-        print("Board is full!")
         calculate_score(board, player_list)
         point_max = -1
         player_max = None
+        tying = False
         for player in player_list:
             player_score = player.get_points(board.get_point_dict())
-            if player_score > point_max:
+            if player_score == point_max:
+                tying = True
+            elif player_score > point_max:
                 point_max = player_score
                 player_max = player
+                tying = False
+
+        if tying:
+            return (True, full, None)
         return (True, full, player)
 
     return (False, full, None)
@@ -180,10 +201,7 @@ def calculate_score(board, player_list):
                 for i in range(board.in_a_row-1, 0, -1):
                     #print("Calculating row of length: " + i.__str__())
                     row = get_row(board, Point(r, c, ' '), d, i)
-                    print(row.get_row())
                     if row.owned():
                         owning_player = row.get_owner()
-                        print(owning_player)
-                        print(owning_player.contains(row.get_row()))
-                        if not owning_player.contains(row.get_row()):
+                        if not owning_player.contains(row):
                             owning_player.add_row(row)

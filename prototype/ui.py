@@ -1,5 +1,7 @@
 from board import Board
 
+from settings import nothing
+
 highlight = True
 
 player_input = []
@@ -25,38 +27,44 @@ if __name__ == "__main__":
 
         while not yConfirm:
             spaceY = input("Which row would player " + (player_index + 1).__str__() + " like to choose: ") - 1
-            player_input.append(spaceY)
+            player_input.append(spaceY+1)
             if highlight:
                 print(board.highlight_row(spaceY))
             print ("Player " + (player_index + 1).__str__() + " chose row " + (spaceY + 1).__str__())
             spaceXStr = raw_input("Confirm row by entering a column, or enter \"n\" to enter a new column: ")
             if spaceXStr.isdigit():
+                player_input.append(int(spaceXStr))
                 spaceX = int(spaceXStr) - 1
-                player_input.append(spaceX)
                 yConfirm = True
+            if board.get_at_space(spaceX, spaceY) != nothing:
+                print("That space is invalid. Please enter another space.")
+                yConfirm = False
 
 
 
         game_over, board_full, winning_player = board.place_in_space((player_index+1).__str__(), spaceX, spaceY)
         if highlight:
+            print
             print(board.highlight_col(spaceX))
         else:
+            print
             print(board)
         if board_full:
             game_over = True
-            print("Player " + winning_player.get_index().__str__() + " won!")
-            print(winning_player)
-            print(winning_player.get_rows())
+            if winning_player != None:
+                print("Player " + (winning_player.get_index()+1).__str__() + " won!")
+                print(winning_player.__str__())
+                print(str(winning_player.get_rows()))
+            else:
+                print("There was a tie!")
             for player in board.get_player_list():
-                print("Player " + player.get_index().__str__())
+                print
+                print("Player " + (player.get_index()+1).__str__())
                 print("Score: " + player.get_points(board.get_point_dict()).__str__())
         elif winning_player != None:
-            print("Player " + winning_player.get_index().__str__() + " won!")
+            print("Player " + (winning_player.get_index()+1).__str__() + " won!")
             print(winning_player)
             print(winning_player.get_rows())
         #print(board)
 
         player_index = (player_index + 1) % players
-
-    for inp in player_input:
-        print(inp)

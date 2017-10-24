@@ -1,8 +1,7 @@
 from math import ceil
 from backend import check_board_state
 from backend import Player
-
-nothing = " "
+from settings import nothing
 
 class Board:
 
